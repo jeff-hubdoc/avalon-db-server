@@ -15,9 +15,9 @@ const getTableData = (req, res, db) => {
 const createNewGame = ({ body }, res, db) => {
   const currectDatetime = JSON.stringify(moment());
   db.raw(`
-    INSERT INTO Games (finish_date, winner)
-    VALUES (?, ?)`,
-    [currectDatetime, body.winner])
+    INSERT INTO Games (finish_date, winner, merlin_assassinated)
+    VALUES (?, ?, ?)`,
+    [currectDatetime, body.winner, body.merlin_assassinated])
     .then(items => {
       if(items.length){
         res.json(items)
@@ -75,7 +75,7 @@ const postTableData = (req, res, db) => {
 module.exports = {
   getTableData,
   postTableData,
-  putTableData,
-  deleteTableData,
+  // putTableData,
+  // deleteTableData,
   createNewGame ,
 }
