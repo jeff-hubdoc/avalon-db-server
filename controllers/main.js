@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const getTableData = (req, res, db) => {
   db.select('*').from('Players')
     .then(items => {
@@ -10,6 +12,35 @@ const getTableData = (req, res, db) => {
     .catch(err => res.status(400).json({dbError: 'get db error'}))
 }
 
+const createNewGame = ({ body }, res, db) => {
+  const currectDatetime = JSON.stringify(moment());
+  db.raw(`
+    INSERT INTO Games (finish_date, winner)
+    VALUES (?, ?)`,
+    [currectDatetime, body.winner])
+    .then(items => {
+      if(items.length){
+        res.json(items)
+      } else {
+        res.json({dataExists: 'GET returned nothing false'})
+      }
+    })
+    .catch(err => res.status(400).json({dbError: err}))
+}
+
+const getTableDataOld = (req, res, db) => {
+  db.select('*').from('testtable1')
+    .then(items => {
+      if(items.length){
+        res.json(items)
+      } else {
+        res.json({dataExists: 'false'})
+      }
+    })
+    .catch(err => res.status(400).json({dbError: 'db error'}))
+}
+
+
 const postTableData = (req, res, db) => {
   console.log('WHAT IS THE REQUEST', req.body)
   const { table, username } = req.body
@@ -18,22 +49,6 @@ const postTableData = (req, res, db) => {
     .returning('*')
     .then(item => {
       res.json(item)
-    })
-    .catch(err => res.status(400).json({dbError: err}))
-}
-
-const createNewGame = ({ body }, res, db) => {
-  console.log(body)
-  db.raw(`
-    INSERT INTO Games (finish_date, winner)
-    VALUES (?, ?)
-    `, ['12/12/12', body.winner])
-    .then(items => {
-      if(items.length){
-        res.json(items)
-      } else {
-        res.json({dataExists: 'GET returned nothing false'})
-      }
     })
     .catch(err => res.status(400).json({dbError: err}))
 }
@@ -60,6 +75,7 @@ const createNewGame = ({ body }, res, db) => {
 module.exports = {
   getTableData,
   postTableData,
-  // putTableData,
-  // deleteTableData
+  putTableData,
+  deleteTableData,
+  createNewGame ,
 }
