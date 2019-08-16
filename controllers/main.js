@@ -1,5 +1,5 @@
 const getTableData = (req, res, db) => {
-  db.select('*').from('Roles')
+  db.select('*').from('Players')
     .then(items => {
       if(items.length){
         res.json(items)
@@ -10,40 +10,20 @@ const getTableData = (req, res, db) => {
     .catch(err => res.status(400).json({dbError: 'get db error'}))
 }
 
-const getTableDataOld = (req, res, db) => {
-  db.select('*').from('testtable1')
-    .then(items => {
-      if(items.length){
-        res.json(items)
-      } else {
-        res.json({dataExists: 'false'})
-      }
-    })
-    .catch(err => res.status(400).json({dbError: 'db error'}))
-}
-
-
 const postTableData = (req, res, db) => {
-  const { name } = req.body
-  console.log('what is req body', req.body)
-  console.log('what is name', name)
-  const added = new Date()
-  db('testplayers').insert({name})
+  // const { table, role_name, alignment } = req.body
+  const { table, username } = req.body
+  // console.log('what is req body', req.body)
+  // console.log('what is name', name)
+  // const added = new Date()
+
+  // console.log(table, role_name, alignment)
+  db(table).insert({username})
     .returning('*')
     .then(item => {
       res.json(item)
     })
-    .catch(err => res.status(400).json({dbError: 'post to table error'}))
-}
-const postTableDataOld = (req, res, db) => {
-  const { first, last, email, phone, location, hobby } = req.body
-  const added = new Date()
-  db('testtable1').insert({first, last, email, phone, location, hobby, added})
-    .returning('*')
-    .then(item => {
-      res.json(item)
-    })
-    .catch(err => res.status(400).json({dbError: 'db error'}))
+    .catch(err => res.status(400).json({dbError: err}))
 }
 
 const putTableData = (req, res, db) => {
