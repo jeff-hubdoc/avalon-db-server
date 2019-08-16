@@ -11,13 +11,9 @@ const getTableData = (req, res, db) => {
 }
 
 const postTableData = (req, res, db) => {
-  // const { table, role_name, alignment } = req.body
+  console.log('WHAT IS THE REQUEST', req.body)
   const { table, username } = req.body
-  // console.log('what is req body', req.body)
-  // console.log('what is name', name)
-  // const added = new Date()
 
-  // console.log(table, role_name, alignment)
   db(table).insert({username})
     .returning('*')
     .then(item => {
@@ -26,28 +22,44 @@ const postTableData = (req, res, db) => {
     .catch(err => res.status(400).json({dbError: err}))
 }
 
-const putTableData = (req, res, db) => {
-  const { id, first, last, email, phone, location, hobby } = req.body
-  db('testtable1').where({id}).update({first, last, email, phone, location, hobby})
-    .returning('*')
-    .then(item => {
-      res.json(item)
+const createNewGame = ({ body }, res, db) => {
+  console.log(body)
+  db.raw(`
+    INSERT INTO Games (finish_date, winner)
+    VALUES (?, ?)
+    `, ['12/12/12', body.winner])
+    .then(items => {
+      if(items.length){
+        res.json(items)
+      } else {
+        res.json({dataExists: 'GET returned nothing false'})
+      }
     })
-    .catch(err => res.status(400).json({dbError: 'db error'}))
+    .catch(err => res.status(400).json({dbError: err}))
 }
 
-const deleteTableData = (req, res, db) => {
-  const { id } = req.body
-  db('testtable1').where({id}).del()
-    .then(() => {
-      res.json({delete: 'true'})
-    })
-    .catch(err => res.status(400).json({dbError: 'db error'}))
-}
+// const putTableData = (req, res, db) => {
+//   const { id, first, last, email, phone, location, hobby } = req.body
+//   db('testtable1').where({id}).update({first, last, email, phone, location, hobby})
+//     .returning('*')
+//     .then(item => {
+//       res.json(item)
+//     })
+//     .catch(err => res.status(400).json({dbError: 'db error'}))
+// }
+
+// const deleteTableData = (req, res, db) => {
+//   const { id } = req.body
+//   db('testtable1').where({id}).del()
+//     .then(() => {
+//       res.json({delete: 'true'})
+//     })
+//     .catch(err => res.status(400).json({dbError: 'db error'}))
+// }
 
 module.exports = {
   getTableData,
   postTableData,
-  putTableData,
-  deleteTableData
+  // putTableData,
+  // deleteTableData
 }
